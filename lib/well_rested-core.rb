@@ -1,8 +1,8 @@
 require "well_rested-core/version"
 
-require "well_rested"
+# require "well_rested"
 
-require 'well_rested/core_formatter'
+# require 'well_rested/core_formatter'
 
 
 # # require external dependencies
@@ -14,11 +14,11 @@ require 'well_rested/core_formatter'
 # require 'generic_utils'
 
 # # require internal libs
-# require 'well_rested/api'
-# require 'well_rested/base'
-# require 'well_rested/utils'
+require 'well_rested/api'
+require 'well_rested/base'
+require 'well_rested/utils'
 # require 'well_rested/json_formatter'
-# require 'well_rested/core_formatter'
+require 'well_rested/core_formatter'
 # require 'well_rested/camel_case_formatter'
 
 # Make sure 'bases' singularizes to 'base' instead of 'basis'.

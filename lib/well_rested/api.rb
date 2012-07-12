@@ -18,14 +18,10 @@ module WellRested
     attr_accessor :default_path_parameters
     attr_accessor :client
     attr_reader   :last_response
-    attr_accessor :unique_id
-    attr_accessor :version
 
-    def initialize(path_params = {}, session_params = {}, version = "")
+    def initialize(path_params = {})
       self.default_path_parameters = path_params.with_indifferent_access
       self.client = RestClient
-      self.unique_id = session_params.try(:uid) || 'unauthorized'
-      self.version = version
     end
 
     ##
@@ -101,9 +97,8 @@ module WellRested
       url = url_for(klass, path_params_or_url, query_params)
 
       logger.info "GET #{url}"
-      # response = client.get(url, request_headers) do |response, request, result, &block|
       response = client.get(url, request_headers) do |response, request, result, &block|
-      @last_response = response
+        @last_response = response
         response.return!(request, result, &block)
       end
 
@@ -244,31 +239,14 @@ module WellRested
 
     # Convenience method. Also allows request_headers to be can be set on a per-instance basis.
     def request_headers
-      self.class.request_headers(self.unique_id, self.version)
+      self.class.request_headers
     end
 
     # Return the default headers sent with all HTTP requests.
-    def self.request_headers(unique_id, version)
+    def self.request_headers
       # Accept necessary for fetching results by result ID, but not in most places.
-      {
-        :content_type => 'application/json',
-        :accept => 'application/json',
-        "Authentication" => unique_id,
-        :version => version
-      }
+      { :content_type => 'application/json', :accept => 'application/json' }
     end
-
-    # # 20120627 CR: Add authentication to header
-    # def request_headers_with_authentication(authentication_id)
-    #   self.class.request_headers_with_authentication(authentication_id)
-    # end
-
-    # # Return the default headers sent with all HTTP requests.
-    # def self.request_headers_with_authentication(authentication_id)
-    #   # Accept necessary for fetching results by result ID, but not in most places.
-    #   { :content_type => 'application/json', :accept => 'application/json', :Authentication => authentication_id}
-    # end
-
 
     # TODO: Move this into a utility module? It can then be called from Base#fill_path or directly if needed.
     def self.fill_path(path_template, params)
@@ -320,7 +298,7 @@ module WellRested
       end
 
       # If ID is set in path parameters, do a PUT. Otherwise, do a POST.
-      method = resource.path_parameters[:key].blank? ? :post : :put
+      method = resource.path_parameters[:id].blank? ? :post : :put
 
       response = run_update(method, url, payload)
 
@@ -328,7 +306,7 @@ module WellRested
       decoded_hash = resource.class.attribute_formatter.decode(hash)
       logger.info "* Errors: #{decoded_hash['errors'].inspect}" if decoded_hash.include?('errors')
 
-      if response.code.between?(200,299)
+      if response.code == 200
         # If save succeeds, replace resource's attributes with the ones returned.
         return decoded_hash.map { |hash| resource.class.new_from_api(hash) } if decoded_hash.kind_of?(Array)
         resource.load_from_api(decoded_hash)

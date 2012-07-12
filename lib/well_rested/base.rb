@@ -29,7 +29,7 @@ module WellRested
     # class-level defaults
     self.protocol = 'http'
     # a body formatter must respond to the methods encode(hash_or_array) => string and decode(string) => hash_or_array
-    self.body_formatter = JSONFormatter.new
+    self.body_formatter = JSONFormatter.new   
     self.extension = ''
     # an attribute formatter must respond to encode(attribute_name_string) => string and decode(attribute_name_string) => string
     self.attribute_formatter = CamelCaseFormatter.new
@@ -41,11 +41,11 @@ module WellRested
     # Define the schema for this resource.
     #
     # Either takes an array, or a list of arguments which we treat as an array.
-    # Each element of the array should be either a symbol or a hash.
+    # Each element of the array should be either a symbol or a hash. 
     # If it's a symbol, we create an attribute using the symol as the name and with a null default value.
     # If it's a hash, we use the keys as attribute names.
     #   - Any values that are hashes, we use to specify further options (currently, the only option is :default).
-    #   - Any value that is not a hash is treated as a default.
+    #   - Any value that is not a hash is treated as a default. 
     #  e.g.
     #  define_schema :x, :y, :z                            # x, y, and z all default to nil
     #  define_schema :id, :name => 'John'                  # id defaults to nil, name defaults to 'John'
@@ -84,7 +84,7 @@ module WellRested
     def initialize(attrs = {})
       raise "Attrs must be hash" unless attrs.is_a? Hash
 
-      self.load(attrs, false)
+      self.load(attrs, false) 
     end
 
     # Define an actual method for ID. This is important in Ruby 1.8 where the object_id method is also aliased to id.
@@ -133,9 +133,9 @@ module WellRested
 
       #puts "*** Warning: loading a resource without a schema (#{self.class})!" if schema.nil?
       #raise "Tried to load attributes for a resource with no schema (#{self.class})!" if schema.nil?
-
+      
       # We mark a record as new if it doesn't come from the API and it doesn't have an ID.
-      self.new_record = !from_api
+      self.new_record = !from_api 
       self.new_record = false if attrs_to_load.include?(:id) or attrs_to_load.include?('id')
 
       new_attrs = {}.with_indifferent_access
@@ -192,9 +192,9 @@ module WellRested
           klass = find_resource_class(class_name)
           if klass
             #puts "**** class exists, instantiation"
-            hash[k] = v.map do |o|
-              if o.kind_of?(Hash)
-                from_api ? klass.new_from_api(o) : klass.new(o)
+            hash[k] = v.map do |o| 
+              if o.kind_of?(Hash) 
+                from_api ? klass.new_from_api(o) : klass.new(o) 
               else
                 o
               end
@@ -222,7 +222,7 @@ module WellRested
       hash
     end
 
-    # API should use these to generate the path.
+    # API should use these to generate the path. 
     # Override this to control how path variables get inserted.
     def path_parameters
       objects_to_attributes(@attributes.reject { |k,v| v.nil? }.with_indifferent_access)
@@ -237,11 +237,11 @@ module WellRested
     def to_param
       self.id.nil? ? nil : self.id.to_s
     end
-
+    
     # Return a key for rails to use for... not sure exaclty what.
     # Should be an array, or nil.
     def to_key
-      self.id.nil? ? nil : [self.id]
+      self.id.nil? ? nil : [self.id] 
     end
 
     # The following 3 methods were copied from active_record/persistence.rb

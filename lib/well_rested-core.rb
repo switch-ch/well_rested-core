@@ -28,7 +28,18 @@ ActiveSupport::Inflector.inflections do |inflect|
 end
 
 module WellRested
+
+  def logger
+    return Rails.logger if Utils.class_exists? 'Rails'
+    return @logger if @logger
+
+    require 'logger'
+    @logger = Logger.new(STDERR)
+    @logger.datetime_format = "%H:%M:%S"
+    @logger
+  end
+
   module Core
-    autoload :API, 'well_rested/api'
+    # autoload :API, 'well_rested/api'
   end
 end

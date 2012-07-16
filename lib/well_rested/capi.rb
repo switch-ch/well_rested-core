@@ -18,7 +18,7 @@ module WellRested
     def initialize(path_params = {}, session_params = {}, version = "")
       self.default_path_parameters = path_params.with_indifferent_access
       self.client = RestClient
-      self.unique_id = session_params.try(:uid) || 'unauthorized'
+      self.unique_id = session_params.try(:id) || 'unauthorized'
       self.version = version
     end
 
